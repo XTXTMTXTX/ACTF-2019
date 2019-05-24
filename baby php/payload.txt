@@ -1,0 +1,2 @@
+?1=0e215962017&2=1&3=2&result=4c1b50b5579037f7e0b3c4e067d9735e440772cb&lucky[]=2
+ACTF{We1com3_t0_ACTF_3njoy_y0ur_tr1p_In_PHP_Wor1d!}

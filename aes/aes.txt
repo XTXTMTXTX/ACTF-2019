@@ -1,0 +1,39 @@
+from pwn import *
+import os
+auth='<deleted>'
+sh=remote("10.214.24.188",13370)
+sh.sendline(auth)
+sh.recvrepeat(timeout = 1)
+#sh=process('./challenge1.py')
+sh.recvrepeat(timeout = 1)
+sec=''
+a='Your name:'
+c='Your secret:'
+def enc(str):
+    pad=(16-len(a))*'a'+str
+    sh.sendline('Get secret'.encode('hex'))
+    sh.recvuntil("Your name: ")
+    sh.sendline(pad.encode('hex'))
+    tret=sh.recv()
+    tret=tret[:len(tret)].decode('hex')
+    #tret[16:16*2].encode('hex')
+    return tret[16:16*2]
+
+for i in range(1,20):
+    b=(48-len(a+c)-i)*'0'
+    sh.sendline('Get secret'.encode('hex'))
+    sh.recvuntil("Your name: ")
+    sh.sendline(b.encode('hex'))
+    ret=sh.recv()
+    ret=ret[:len(ret)].decode('hex')
+    print ret[16*2:16*3].encode('hex')
+    for j in range(0,256):
+        if enc((a+b+c+sec+chr(j))[16*2:16*3])==ret[16*2:16*3]:
+            sec+=chr(j)
+            break
+
+print sec
+
+sh.sendline('Get flag'.encode('hex'))
+sh.sendline(sec.encode('hex'))
+sh.interactive()

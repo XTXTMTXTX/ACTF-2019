@@ -1,0 +1,128 @@
+try:
+    input = raw_input
+except:
+    pass
+c = input()
+x=globals
+_eval = eval
+
+import ast
+import sys
+
+dbgprint = sys.stderr.write
+
+class Traversal():
+    def __init__(self, node):
+        self.tisiv(node)
+
+    depth = -1
+    def tisiv(self, nodes):
+        if not isinstance(nodes, list):
+            nodes = [nodes]
+        self.depth += 1
+        for node in nodes:
+            func = getattr(self, 'tisiv_' + node.__class__.__name__, None)
+            if func:
+                dbgprint(" "*self.depth + "tisiv"[::-1] +"      "+ node.__class__.__name__+"
+")
+                return func(node)
+        self.depth -= 1
+
+    def tisiv_Call(self, node):
+        self.tisiv(node.func)
+        self.tisiv(node.args)
+        self.tisiv(node.keywords)
+
+    def tisiv_Attribute(self, node):
+        self.tisiv(node.value)
+        self.tisiv(node.attr)
+
+    def tisiv_Import(self, node):
+        raise Exception("not allowed")
+
+    def tisiv_Module(self, node):
+        self.tisiv(node.body)
+
+    def tisiv_BoolOp(self, node):
+        self.tisiv(node.values)
+
+    def tisiv_BinOp(self, node):
+        self.tisiv(node.left)
+        self.tisiv(node.right)
+
+    def tisiv_UnaryOp(self, node):
+        self.tisiv(node.operand)
+
+    def tisiv_Lambda(self, node):
+        self.tisiv(node.body)
+
+    def tisiv_IfExp(self, node):
+        self.tisiv(node.test)
+        self.tisiv(node.body)
+        self.tisiv(node.orelse)
+
+    def tisiv_Dict(self, node):
+        self.tisiv(node.keys)
+        self.tisiv(node.values)
+
+    def tisiv_Set(self, node):
+        self.tisiv(node.elts)
+
+    def tisiv_ListComp(self, node):
+        raise Exception("not allowed")
+        self.tisiv(node.elt)
+        self.tisiv(node.generators)
+
+    def tisiv_SetComp(self, node):
+        self.tisiv(node.elt)
+        self.tisiv(node.generators)
+
+    def tisiv_DictComp(self, node):
+        self.tisiv(node.key)
+        self.tisiv(node.value)
+        self.tisiv(node.generators)
+
+    def tisiv_GeneratorExp(self, node):
+        self.tisiv(node.elt)
+        self.tisiv(node.generators)
+
+    def tisiv_Yield(self, node):
+        self.tisiv(node.value)
+
+    def tisiv_Compare(self, node):
+        self.tisiv(node.left)
+        self.tisiv(node.comparators)
+
+    def tisiv_Repr(self, node):
+        self.tisiv(node.value)
+
+    def tisiv_Subscript(self, node):
+        self.tisiv(node.value)
+        self.tisiv(node.slice)
+
+    def tisiv_List(self, node):
+        self.tisiv(node.elts)
+
+    def tisiv_Tuple(self, node):
+        self.tisiv(node.elts)
+
+    def tisiv_Expr(self, node):
+        self.tisiv(node.value)
+
+    def tisiv_JoinedStr(self, node):
+        self.tisiv(node.values)
+
+    def tisiv_NameConstant(self, node):
+        pass
+
+Traversal(ast.parse(c))
+
+for i in list(__builtins__.__dict__.keys()):
+    if i not in ["print", "list", ]:
+        del(__builtins__.__dict__[i])
+
+for i in list(x().keys()):
+    if i not in ["x", "print", "_eval", "c", ]:
+        del(x()[i])
+
+print(_eval(c))

